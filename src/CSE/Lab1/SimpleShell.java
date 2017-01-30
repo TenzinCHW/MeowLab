@@ -9,42 +9,64 @@ public class SimpleShell {
         ArrayList<String> commands = new ArrayList<String>();
 		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
         ProcessBuilder builder = new ProcessBuilder();
+        InputStream stream;
+        InputStreamReader reader;
+        BufferedReader buffered;
         Process process;
+        File pwd = new File(System.getProperty("user.dir"));
         ArrayList<String> history = new ArrayList<String>();
+
+        System.out.println(System.getProperties());
 
 		while (true) {
 			// read what the user entered
 			System.out.print("jsh>");
 			commandLine = console.readLine();
-            
+            builder.directory(pwd);
 
-			// TODO: adding a history feature
-            history.add(commandLine);
             
 			if (commandLine.equals("!!")) {
                 commands = getCommand(history.get(history.size() - 1));
-                //TODO: execute last command
             } else if (isInt(commandLine)) {
                 commands = getCommand(history.get(Integer.parseInt(commandLine) - 1));
-                // TODO: execute the commandLine-th command from history
+            } else if (commandLine.equals("exit")) {
+			    System.exit(0);
+            } else if (commandLine.equals("")) {
+				continue;
+			} else if (commandLine.equals("history")) {
+                for (String hist :
+                        history) {
+                    System.out.println(hist);
+                }
+                continue;
+            } else if (commandLine.startsWith("cd ")) {
+			    String newDir = commandLine.substring(3);
+			    if (commandLine.charAt(3) == '/') {
+			        pwd = new File(newDir);
+                } else {
+			        pwd = new File(pwd + "/" + newDir);
+                }
+                continue;
+            } else {
+                commands = getCommand(commandLine);
             }
 
-			// if the user entered a return, just loop again
-			if (commandLine.equals("")) {
-				continue;
-			}
-
 			try {
-                // TODO: creating the external process and executing the command in that process
-                commands = getCommand(commandLine);
                 builder.command(commands);
                 process = builder.start();
-                System.out.println(process.getInputStream());
+                stream = process.getInputStream();
+                reader = new InputStreamReader(stream);
+                buffered = new BufferedReader(reader);
+                String line;
+                while ((line = buffered.readLine()) !=null) {
+                    System.out.println(line);
+                }
+                buffered.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            // TODO: modifying the shell to allow changing directories
+            history.add(commandLine);
 		}
 	}
 
