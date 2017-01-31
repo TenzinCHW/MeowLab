@@ -16,27 +16,46 @@ public class SimpleShell {
         File pwd = new File(System.getProperty("user.dir"));
         ArrayList<String> history = new ArrayList<String>();
 
-        System.out.println(System.getProperties());
 
 		while (true) {
 			// read what the user entered
 			System.out.print("jsh>");
 			commandLine = console.readLine();
+            history.add(commandLine);
             builder.directory(pwd);
 
             
 			if (commandLine.equals("!!")) {
-                commands = getCommand(history.get(history.size() - 1));
+                if (history.size() > 1) {
+                    System.out.println("Try me");
+                    commands = getCommand(history.get(history.size() - 2));
+                } else {
+                    System.out.println("Die liao. Not enuff history.");
+                }
+                history.remove(history.size() - 1);
             } else if (isInt(commandLine)) {
-                commands = getCommand(history.get(Integer.parseInt(commandLine) - 1));
+			    history.remove(history.size() - 1);
+			    if (history.size() >= Integer.parseInt(commandLine) + 1 && Integer.parseInt(commandLine) >= 0) {
+			        String hold = history.get(Integer.parseInt(commandLine));
+			        history.add(hold);
+                    commands = getCommand(hold);
+                } else {
+			        if (Integer.parseInt(commandLine) < 0) {
+                        System.out.println("History don't go so far back.");
+                    } else{
+                        System.out.println("Die liao. Not enuff history.");
+                    }
+                    continue;
+                }
             } else if (commandLine.equals("exit")) {
-			    System.exit(0);
+                System.out.println("BYE!");
+                System.exit(0);
             } else if (commandLine.equals("")) {
 				continue;
 			} else if (commandLine.equals("history")) {
-                for (String hist :
-                        history) {
-                    System.out.println(hist);
+                history.remove(history.size() - 1);
+                for (int i = 0; i < history.size(); i++) {
+                    System.out.println(i + " " + history.get(i));
                 }
                 continue;
             } else if (commandLine.startsWith("cd ")) {
@@ -44,6 +63,16 @@ public class SimpleShell {
 			    if (commandLine.charAt(3) == '/') {
 			        pwd = new File(newDir);
                 } else {
+			        try {
+			            builder.directory(new File(pwd + "/" + newDir));
+			            ArrayList<String> test = new ArrayList<String>();
+			            test.add("ls");
+			            builder.command(test);
+			            builder.start();
+                    } catch (Exception e) {
+                        System.out.println("There ain't no directory here called " + newDir);
+                        continue;
+                    }
 			        pwd = new File(pwd + "/" + newDir);
                 }
                 continue;
@@ -63,10 +92,8 @@ public class SimpleShell {
                 }
                 buffered.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());;
             }
-
-            history.add(commandLine);
 		}
 	}
 
