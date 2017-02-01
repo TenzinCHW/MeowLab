@@ -27,7 +27,6 @@ public class SimpleShell {
             
 			if (commandLine.equals("!!")) {
                 if (history.size() > 1) {
-                    System.out.println("Try me");
                     commands = getCommand(history.get(history.size() - 2));
                 } else {
                     System.out.println("Die liao. Not enuff history.");
