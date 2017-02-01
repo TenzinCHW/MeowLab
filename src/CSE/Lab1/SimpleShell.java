@@ -2,6 +2,8 @@ package CSE.Lab1;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SimpleShell {
     public static void main(String[] args) throws IOException {
@@ -57,11 +59,16 @@ public class SimpleShell {
                     System.out.println(i + " " + history.get(i));
                 }
                 continue;
-            } else if (commandLine.startsWith("cd ")) {
+            } else if (commandLine.startsWith("cd")) {
                 String newDirStr = commandLine.substring(3);
+                Pattern homePatt = Pattern.compile("cd(\\s)*");
+                Matcher homeMatch = homePatt.matcher(commandLine);
                 File newDir;
                     try {
-                        if (commandLine.charAt(3) == '/') {
+                        if (homeMatch.matches()) {
+                            newDir = new File(System.getProperty("user.dir"));
+                        }
+                        else if (commandLine.charAt(3) == '/') {
                             newDir = new File(newDirStr);
                         } else {
                             newDir = new File(pwd + "/" + newDirStr);
@@ -75,7 +82,7 @@ public class SimpleShell {
                         System.out.println("There ain't no directory here called " + newDirStr);
                         continue;
                     }
-                    pwd = new File(pwd + "/" + newDir);
+                    pwd = newDir;
                 continue;
             } else {
                 commands = getCommand(commandLine);
