@@ -76,7 +76,6 @@ public class SimpleShell {
                             newDir = new File(newDirStr);
                         } else if (parentMatch.matches()) {
                             newDirStr = System.getProperty("user.dir").substring(0, System.getProperty("user.dir").lastIndexOf("/"));
-                            ;
                             newDir = new File(newDirStr);
                         } else {
                             newDir = new File(pwd + "/" + newDirStr);
