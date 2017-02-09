@@ -6,16 +6,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SimpleShell {
+    static File pwd = new File(System.getProperty("user.dir"));
+    static ProcessBuilder builder = new ProcessBuilder();
+
     public static void main(String[] args) throws IOException {
         String commandLine;
         ArrayList<String> commands = new ArrayList<String>();
         BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-        ProcessBuilder builder = new ProcessBuilder();
         InputStream stream;
         InputStreamReader reader;
         BufferedReader buffered;
         Process process;
-        File pwd = new File(System.getProperty("user.dir"));
         ArrayList<String> history = new ArrayList<String>();
 
 
@@ -29,17 +30,26 @@ public class SimpleShell {
 
             if (commandLine.equals("!!")) {
                 if (history.size() > 1) {
-                    commands = getCommand(history.get(history.size() - 2));
+                    history.remove(history.size() - 1);
+                    commandLine = history.get(history.size() - 1);
+                    commands = getCommand(commandLine);
+                    if (commandLine.startsWith("cd") && commandLine.length() != 3) {
+                        changeDir(commandLine);
+                        continue;
+                    }
                 } else {
                     System.out.println("Die liao. Not enuff history.");
                 }
-                history.remove(history.size() - 1);
             } else if (isInt(commandLine)) {
                 history.remove(history.size() - 1);
-                if (history.size() >= Integer.parseInt(commandLine) + 1 && Integer.parseInt(commandLine) >= 0) {
-                    String hold = history.get(Integer.parseInt(commandLine));
-                    history.add(hold);
-                    commands = getCommand(hold);
+                if (history.size() > Integer.parseInt(commandLine) && Integer.parseInt(commandLine) >= 0) {
+                    commandLine = history.get(Integer.parseInt(commandLine));
+                    history.add(commandLine);
+                    commands = getCommand(commandLine);
+                    if (commandLine.startsWith("cd") && commandLine.length() != 3) {
+                        changeDir(commandLine);
+                        continue;
+                    }
                 } else {
                     if (Integer.parseInt(commandLine) < 0) {
                         System.out.println("History don't go so far back.");
@@ -61,36 +71,7 @@ public class SimpleShell {
                 }
                 continue;
             } else if (commandLine.startsWith("cd") && commandLine.length() != 3) {
-                String newDirStr = "";
-                File newDir = new File(newDirStr);
-                Pattern homePatt = Pattern.compile("cd(\\s)*");
-                Matcher homeMatch = homePatt.matcher(commandLine);
-                try {
-                    if (homeMatch.matches()) {
-                        newDir = new File(System.getProperty("user.dir"));
-                    } else if (commandLine.length() > 3) {
-                        Pattern parentPatt = Pattern.compile("cd \\.\\.(\\s)*");
-                        Matcher parentMatch = parentPatt.matcher(newDirStr);
-                        newDirStr = commandLine.substring(3);
-                        if (commandLine.charAt(3) == '/') {
-                            newDir = new File(newDirStr);
-                        } else if (parentMatch.matches()) {
-                            newDirStr = System.getProperty("user.dir").substring(0, System.getProperty("user.dir").lastIndexOf("/"));
-                            newDir = new File(newDirStr);
-                        } else {
-                            newDir = new File(pwd + "/" + newDirStr);
-                        }
-                    }
-                    builder.directory(newDir);
-                    ArrayList<String> test = new ArrayList<String>();
-                    test.add("ls");
-                    builder.command(test);
-                    builder.start();
-                } catch (Exception e) {
-                    System.out.println("There ain't no directory here called " + newDirStr);
-                    continue;
-                }
-                pwd = newDir;
+                changeDir(commandLine);
                 continue;
             } else {
                 commands = getCommand(commandLine);
@@ -131,5 +112,38 @@ public class SimpleShell {
             commands.add(word);
         }
         return commands;
+    }
+
+    private static void changeDir(String cd) {
+        String newDirStr = "";
+        File newDir = new File(newDirStr);
+        Pattern homePatt = Pattern.compile("cd(\\s)*");
+        Matcher homeMatch = homePatt.matcher(cd);
+        try {
+            if (homeMatch.matches()) {
+                newDir = new File(System.getProperty("user.dir"));
+            } else if (cd.length() > 3) {
+                Pattern parentPatt = Pattern.compile("cd \\.\\.(\\s)*");
+                Matcher parentMatch = parentPatt.matcher(newDirStr);
+                newDirStr = cd.substring(3);
+                if (cd.charAt(3) == '/') {
+                    newDir = new File(newDirStr);
+                } else if (parentMatch.matches()) {
+                    newDirStr = System.getProperty("user.dir").substring(0, System.getProperty("user.dir").lastIndexOf("/"));
+                    newDir = new File(newDirStr);
+                } else {
+                    newDir = new File(pwd + "/" + newDirStr);
+                }
+            }
+            builder.directory(newDir);
+            ArrayList<String> test = new ArrayList<String>();
+            test.add("ls");
+            builder.command(test);
+            builder.start();
+        } catch (Exception e) {
+            System.out.println("There ain't no directory here called " + newDirStr);
+            return;
+        }
+        pwd = newDir;
     }
 }
