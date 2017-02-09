@@ -18,7 +18,7 @@ public class CastVote {
         numCandidates = getPositiveInt(in);
 
         for (int i = 0; i < numCandidates; i++) {
-            System.out.println("What is the " + (i + 1) + "the candidate's name?");
+            System.out.println("What is the " + (i + 1) + "th candidate's name?");
             name = in.next();
             candidates.put(name, new Candidate(name));
         }
