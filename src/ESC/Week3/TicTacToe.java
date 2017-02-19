@@ -75,14 +75,7 @@ public class TicTacToe {
         if (move.matches("\\s*[1,2,3]\\s*,\\s*[1,2,3]\\s*")) {
             String[] moves = move.split(",");
             int i = Integer.parseInt(moves[0]) - 1;
-            int j = Integer.parseInt(moves[1]);
-            if (j == 3) {
-                j = 0;
-            } else if (j == 1) {
-                j = 2;
-            } else {
-                j = 1;
-            }
+            int j = 3- Integer.parseInt(moves[1]);
             return placePiece(j, i, player);
         }
         return false;
