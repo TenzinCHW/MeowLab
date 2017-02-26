@@ -8,7 +8,7 @@ public class ChatClient {
         //String hostIP = "10.11.3.28";
         //String hostName = "fe80::7517:c1af:b2bb:da73%4";
         int portNumber = 4321;
- 
+
 //        Socket echoSocket = new Socket(hostName, portNumber);
 		Socket echoSocket = new Socket();
 		SocketAddress sockaddr = new InetSocketAddress("localhost", portNumber);
