@@ -44,6 +44,7 @@ public class MatrixThreadArray {
                 timings) {
             System.out.println(time);
         }
+        System.out.println("Human, my work is done.");
     }
 
     public MatrixThreadArray(int[][] matrixA, int[][] matrixB, int numThreads) {
