@@ -11,6 +11,7 @@ public class MatrixThreadArray {
     private int B[][];
     private int result[][];
     private Runnable colleagueThreads[];
+    private Thread threads[];
     private int numberOfThreads;
 
     public static void main(String[] args) {
@@ -52,6 +53,7 @@ public class MatrixThreadArray {
         B = matrixB;
         numberOfThreads = numThreads;
         colleagueThreads = new ColleagueThread[numThreads];
+        threads = new Thread[numThreads];
         assert (A.length > 0 && B.length > 0 && A[0].length > 0 && B[0].length > 0);
         result = new int[A.length][B[0].length];
     }
@@ -62,10 +64,19 @@ public class MatrixThreadArray {
 
     public void solve() {
         splitArray();
-        for (Runnable thread :
-                colleagueThreads) {
-            thread.run();
+        for (int i = 0; i < numberOfThreads; i++) {
+            threads[i] = new Thread(colleagueThreads[i]);
+            threads[i].start();
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                System.out.println("A thread didn't finish :/.");
+            }
         }
+//        for (Runnable thread :
+//                colleagueThreads) {
+//            thread.run();
+//        }
     }
 
     private void splitArray() {
