@@ -1,7 +1,7 @@
 package ESC.Week6;
 public class InterruptExample1 {    
 	public static void main(String args[]){
-		A t1=new A();
+		B t1=new B();
 		t1.start();
 		try{
 			Thread.sleep(1000);
@@ -18,7 +18,7 @@ public class InterruptExample1 {
 	}
 }
 
-class A extends Thread{
+class B extends Thread{
 	public void run(){
 		try{
 			System.out.println("running");
@@ -27,7 +27,7 @@ class A extends Thread{
 		}
 		catch (InterruptedException e){
 			System.out.println("InterruptedException caught");
-			//throw new RuntimeException("Thread interrupted...");
+//			throw new RuntimeException("Thread interrupted...");
 		}
 	}
 }
