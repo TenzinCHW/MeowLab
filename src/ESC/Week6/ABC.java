@@ -10,7 +10,9 @@ public class ABC {
     static Lock lock;
     public static void main(String[] args) {
         lock = new ReentrantLock();
-        StringBuffer buffer = new StringBuffer();
+        StringBuffer buffer = new StringBuffer();   // StringBuffer is used to ensure it is the same object being mutated.
+        // Cannot use String as it is immutable. Any changes made to String will create a new String.
+        // Also, StringBuffer is used instead of StringBuilder because its methods are synchronized i.e. thread safe.
         Thread one = new ABCWorker(buffer);
         Thread two = new ABCWorker(buffer);
         Thread three = new ABCWorker(buffer);

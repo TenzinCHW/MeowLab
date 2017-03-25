@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Scanner;
@@ -53,6 +52,7 @@ public class TicTacToePlayer {
         } catch (IOException e) {
             System.exit(-1);
         }
+        disconnect();
     }
 
     private String receiveMsg() {
@@ -75,12 +75,26 @@ public class TicTacToePlayer {
 
     /* returns true if game has ended */
     private String parseMsg(String msg) {
-        if (msg.endsWith("wins!") || msg.endsWith("draw!")) return null;
+        if (msg.endsWith("wins!") || msg.endsWith("draw!")) {
+            System.out.println(msg);
+            return null;
+        }
         else if (msg.endsWith(":")) {
             System.out.println(msg);
             String input = in.nextLine();
             return input;
         }
         return "Just print";
+    }
+
+    private void disconnect() {
+        try {
+            writer.close();
+            reader.close();
+            connection.close();
+            in.close();
+        } catch (IOException e) {
+            System.out.println("Connection is already closed.");
+        }
     }
 }

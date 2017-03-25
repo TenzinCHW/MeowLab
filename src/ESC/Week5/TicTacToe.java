@@ -78,6 +78,8 @@ public class TicTacToe {
                 break;
             }
         }
+
+        closeConnections();
     }
 
     private boolean makeMove(boolean player) {
@@ -98,6 +100,12 @@ public class TicTacToe {
             move = getPlayerMove(player);
         }
         numMoves++;
+
+        if (player) {
+            updatePlayer(!player, "O moved!");
+        } else {
+            updatePlayer(!player, "X moved!");
+        }
         printBoard();
         if (checkWin()) {
             whoWon();
@@ -190,10 +198,7 @@ public class TicTacToe {
     }
 
     private boolean checkWin() {
-        if (Won(o) || Won(!o)) {
-            return true;
-        }
-        return false;
+        return Won(o) || Won(!o);
     }
 
     private void whoWon() {
@@ -245,5 +250,18 @@ public class TicTacToe {
             return (O[0][0] && O[1][1] && O[2][2]) || (O[0][2] && O[1][1] && O[2][0]);
         }
         return (X[0][0] && X[1][1] && X[2][2]) || (X[0][2] && X[1][1] && X[2][0]);
+    }
+
+    private void closeConnections() {
+        try {
+            for (int i = 0; i < players.size(); i++) {
+                players.get(i).close();
+                writers.get(i).close();
+                readers.get(i).close();
+            }
+            serverSocket.close();
+        } catch (IOException e) {
+            System.out.println("A client connection is already closed.");
+        }
     }
 }
