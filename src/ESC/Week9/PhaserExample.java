@@ -12,7 +12,7 @@ public class PhaserExample {
         new PhaserExample().testPhaser(phaser, 4000);//phaser waiting for 3 parties
         new PhaserExample().testPhaser(phaser, 6000);//phaser waiting for 4 parties
         //now that all threads are initiated, we will de-register main thread
-        //so that the barrier condition of 3 thread arrival is meet.
+        //so that the barrier condition of 3 thread arrival is met.
         phaser.arriveAndDeregister();
         System.out.println(phaser.getRegisteredParties() + " have registered.");
         Thread.sleep(10000);

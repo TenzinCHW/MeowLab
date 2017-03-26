@@ -21,14 +21,14 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$USER_HOME$/Downloads/jmock-2.6.0-jars/jmock-2.6.0" />
+          <root url="file://$USER_HOME$/Downloads/jmock-2.6.0-jars" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$USER_HOME$/Downloads/jmock-2.6.0-jars/jmock-2.6.0" />
+          <root url="file://$USER_HOME$/Downloads/jmock-2.6.0-jars" />
         </SOURCES>
-        <jarDirectory url="file://$USER_HOME$/Downloads/jmock-2.6.0-jars/jmock-2.6.0" recursive="false" />
-        <jarDirectory url="file://$USER_HOME$/Downloads/jmock-2.6.0-jars/jmock-2.6.0" recursive="false" type="SOURCES" />
+        <jarDirectory url="file://$USER_HOME$/Downloads/jmock-2.6.0-jars" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Downloads/jmock-2.6.0-jars" recursive="false" type="SOURCES" />
       </library>
     </orderEntry>
   </component>

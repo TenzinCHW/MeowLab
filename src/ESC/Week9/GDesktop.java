@@ -2,8 +2,8 @@ package ESC.Week9;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by pengpeng on 25/03/17.
@@ -14,7 +14,7 @@ public class GDesktop {
 
     //it starts here
     public static void startIndexing(File[] roots) {
-        Queue<File> queue = new LinkedList<File>();
+        BlockingQueue<File> queue = new LinkedBlockingQueue<>();
         FileFilter filter = new FileFilter() {
             public boolean accept(File file) {
                 return true;
@@ -32,11 +32,11 @@ public class GDesktop {
 }
 
 class FileCrawler extends Thread {
-    private final Queue<File> fileQueue;
+    private final BlockingQueue<File> fileQueue;
     private final FileFilter fileFilter;
     private final File root;
 
-    FileCrawler(Queue<File> queue, FileFilter filter, File root) {
+    FileCrawler(BlockingQueue<File> queue, FileFilter filter, File root) {
         this.fileQueue = queue;
         this.fileFilter = filter;
         this.root = root;
@@ -58,7 +58,7 @@ class FileCrawler extends Thread {
                 if (entry.isDirectory()) {
                     crawl(entry);
                 } else {
-                    fileQueue.offer(entry);
+                    fileQueue.put(entry);
                 }
             }
         }
@@ -66,15 +66,19 @@ class FileCrawler extends Thread {
 }
 
 class Indexer extends Thread {
-    private final Queue<File> queue;
+    private final BlockingQueue<File> queue;
 
-    public Indexer(Queue<File> queue) {
+    public Indexer(BlockingQueue<File> queue) {
         this.queue = queue;
     }
 
     public void run() {
         while (true) {
-            indexFile(queue.poll());
+            try {
+                indexFile(queue.take());
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
