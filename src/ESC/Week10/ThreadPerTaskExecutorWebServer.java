@@ -26,8 +26,33 @@ public class ThreadPerTaskExecutorWebServer {
     }
 
     protected static void handleRequest(Socket connection) {
-        // TODO Auto-generated method stub
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            PrintWriter writer = new PrintWriter(connection.getOutputStream(), true);
+            BigInteger read = factor(new BigInteger(reader.readLine()));
+            writer.write(read.toString());
+            reader.close();
+            writer.close();
+            connection.close();
+        } catch (IOException io) {
+            System.out.println(io.getMessage());
+        }
+    }
 
+    private static BigInteger factor(BigInteger n) {
+        BigInteger i = new BigInteger("2");
+        BigInteger zero = new BigInteger("0");
+
+        while (i.compareTo(n) < 0) {
+            if (n.remainder(i).compareTo(zero) == 0) {
+                return i;
+            }
+
+            i = i.add(new BigInteger("1"));
+        }
+
+        assert (false);
+        return null;
     }
 }
 

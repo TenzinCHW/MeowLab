@@ -24,7 +24,13 @@ public class WebServer {
     }
 
     private static void handleRequest(Socket connection) throws Exception {
-        //todo
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        PrintWriter writer = new PrintWriter(connection.getOutputStream(), true);
+        BigInteger read = factor(new BigInteger(reader.readLine()));
+        writer.write(read.toString());
+        reader.close();
+        writer.close();
+        connection.close();
     }
 
     private static BigInteger factor(BigInteger n) {

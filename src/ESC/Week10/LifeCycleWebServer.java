@@ -32,21 +32,27 @@ public class LifeCycleWebServer {
     }
 
     public static void stop() {
+        System.out.println("Stopping.");
         exec.shutdown();
+        System.exit(0);
     }
 
     protected static void handleRequest(Socket connection) {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             PrintWriter out = new PrintWriter(connection.getOutputStream(), true);
-            BigInteger number = new BigInteger(in.readLine());
-            BigInteger result = factor(number);
-            //System.out.println("sending results: " + String.valueOf(result));
-            out.println(result);
-            out.flush();
-            in.close();
-            out.close();
-            connection.close();
+            String input = in.readLine();
+            if (input.equals("stop")) stop();
+            else {
+                BigInteger number = new BigInteger(input);
+                BigInteger result = factor(number);
+                //System.out.println("sending results: " + String.valueOf(result));
+                out.println(result);
+                out.flush();
+                in.close();
+                out.close();
+                connection.close();
+            }
         } catch (Exception e) {
             System.out.println("Something went wrong with the connection");
         }

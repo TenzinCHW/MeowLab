@@ -1,18 +1,28 @@
 package ESC.Week10;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.math.BigInteger;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-public class SequentialExecutorWebServer {
-    private static final int NTHREADS = 100;
-    private static final Executor exec = new WithinThreadExecutor();
+/**
+ * Created by HanWei on 31/3/2017.
+ */
+public class LifecycleRejectedShutdown {
+    private static final int NTHREADS = 85;
+    private static final ExecutorService exec = new ScheduledThreadPoolExecutor(NTHREADS);
 
     public static void main(String[] args) throws Exception {
         ServerSocket socket = new ServerSocket(4321, 1000);
 
+        exec.shutdown();    // Will throw RejectedExecutionException after shutting down
         while (true) {
             final Socket connection = socket.accept();
             Runnable task = new Runnable() {
@@ -20,7 +30,6 @@ public class SequentialExecutorWebServer {
                     handleRequest(connection);
                 }
             };
-
             exec.execute(task);
         }
     }
@@ -53,12 +62,5 @@ public class SequentialExecutorWebServer {
 
         assert (false);
         return null;
-    }
-}
-
-//Sequential
-class WithinThreadExecutor implements Executor {
-    public void execute(Runnable r) {
-        r.run();
     }
 }
