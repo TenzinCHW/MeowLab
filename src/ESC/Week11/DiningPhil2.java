@@ -1,13 +1,15 @@
 package ESC.Week11;
 
 import java.util.Random;
-import java.util.concurrent.Phaser;
 
-public class DiningPhil {
+/**
+ * Created by HanWei on 8/4/2017.
+ */
+public class DiningPhil2 {
     private static int N = 5;
 
     public static void main(String[] args) throws Exception {
-        Philosopher[] phils = new Philosopher[N];
+        Philosopher2[] phils = new Philosopher2[N];
         Fork[] forks = new Fork[N];
 
         for (int i = 0; i < N; i++) {
@@ -15,34 +17,30 @@ public class DiningPhil {
         }
 
         for (int i = 0; i < N; i++) {
-            phils[i] = new Philosopher(i, forks[i], forks[(i + N - 1) % N]);
+            phils[i] = new Philosopher2(i, forks[i], forks[(i + N - 1) % N]);
             phils[i].start();
         }
     }
 }
 
-class Philosopher extends Thread {
+class Philosopher2 extends Thread {
     private final int index;
     private final Fork left;
     private final Fork right;
-    private int leftFork;
-    private int rightFork;
 
-    public Philosopher(int index, Fork left, Fork right) {
+    public Philosopher2(int index, Fork left, Fork right) {
         this.index = index;
         this.left = left;
         this.right = right;
-        this.leftFork = left.hashCode();
-        this.rightFork = right.hashCode();
     }
 
     public void run() {
         try {
             while (true) {
-                if (leftFork == rightFork) {
+                if (index == 0) {
                     PhiloEat(true);
                 } else {
-                    PhiloEat(leftFork < rightFork);
+                    PhiloEat(false);
                 }
             }
         } catch (InterruptedException e) {
@@ -71,40 +69,5 @@ class Philosopher extends Thread {
         System.out.println("Phil " + index + " puts down left fork.");
         right.putdown();
         System.out.println("Phil " + index + " puts down right fork.");
-    }
-}
-
-class Fork {
-    private final int index;
-    private boolean isAvailable = true;
-
-    public Fork(int index) {
-        this.index = index;
-    }
-
-    public synchronized void pickup() throws InterruptedException {
-        while (!isAvailable) {
-            wait();
-        }
-
-        isAvailable = false;
-        notifyAll();
-    }
-
-    public synchronized void putdown() throws InterruptedException {
-        while (isAvailable) {
-            wait();
-        }
-
-        isAvailable = true;
-        notifyAll();
-    }
-
-    public String toString() {
-        if (isAvailable) {
-            return "Fork " + index + " is available.";
-        } else {
-            return "Fork " + index + " is NOT available.";
-        }
     }
 }

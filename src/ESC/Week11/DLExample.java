@@ -19,10 +19,10 @@ class Taxi {
         return location;
     }
 
-    public synchronized void setLocation(Point location) {
+    public synchronized void setLocation(Point location) {  // If Thread 1 runs this at time = 0
         this.location = location;
         if (location.equals(destination))
-            dispatcher.notifyAvailable(this);
+            dispatcher.notifyAvailable(this);   // Thread 1 gets here at time = 1 and tries to acquire lock on Dispatcher -> deadlock
     }
 
     public synchronized Point getDestination() {
@@ -43,10 +43,10 @@ class Dispatcher {
         availableTaxis.add(taxi);
     }
 
-    public synchronized Image getImage() {
+    public synchronized Image getImage() {  // Thread 2 runs this at time = 0
         Image image = new Image();
         for (Taxi t : taxis)
-            image.drawMarker(t.getLocation());
+            image.drawMarker(t.getLocation());  // Thread 2 gets here at time = 1 and tries to acquire lock on Taxi -> deadlock
         return image;
     }
 }

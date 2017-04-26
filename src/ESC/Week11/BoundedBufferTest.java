@@ -68,4 +68,103 @@ public class BoundedBufferTest {
             assertTrue(false);
         }
     }
+
+    @Test
+    /*
+    * Test to check that putting max number of items then taking same number results in empty buffer
+    */
+    public void testIsEmptyAfterPutsAndTakes() throws InterruptedException {
+        final BoundedBuffer<Integer> bb = new BoundedBuffer<Integer>(10);
+
+        Runnable task = new Runnable() {
+            public void run() {
+                try {
+                    bb.put((new Random()).nextInt());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Thread[] threads = new Thread[10];
+
+        for (int i = 0; i < 10; i++) {
+            threads[i] = new Thread(task);
+            threads[i].start();
+        }
+
+        for (int i = 0; i < 10; i++) {
+            threads[i].join();
+        }
+
+        Runnable takeTask = new Runnable() {
+            public void run() {
+                try {
+                    bb.take();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Thread[] takeThreads = new Thread[10];
+
+        for (int i = 0; i < 10; i++) {
+            takeThreads[i] = new Thread(takeTask);
+            takeThreads[i].start();
+        }
+
+        for (int i = 0; i < 10; i++) {
+            takeThreads[i].join();
+        }
+
+        assertFalse(bb.isFull());
+        assertTrue(bb.isEmpty());
+    }
+
+    @Test
+    public void testPutBlocksWhenFull() throws InterruptedException {
+        final BoundedBuffer<Integer> bb = new BoundedBuffer<Integer>(10);
+
+        Runnable task = new Runnable() {
+            public void run() {
+                try {
+                    bb.put((new Random()).nextInt());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Thread[] threads = new Thread[10];
+
+        for (int i = 0; i < 10; i++) {
+            threads[i] = new Thread(task);
+            threads[i].start();
+        }
+
+        for (int i = 0; i < 10; i++) {
+            threads[i].join();
+        }
+
+        Thread putter = new Thread() {
+            public void run() {
+                try {
+                    bb.put((new Random()).nextInt());
+                    assertTrue(false);
+                } catch (InterruptedException success) {
+                } //if interrupted, the exception is caught here
+            }
+        };
+
+        try {
+            putter.start();
+            Thread.sleep(LOCKUP_DETECT_TIMEOUT);
+            putter.interrupt();
+            putter.join(LOCKUP_DETECT_TIMEOUT);
+            assertFalse(putter.isAlive()); //the putter should not be alive for some time
+        } catch (Exception unexpected) {
+            assertTrue(false);
+        }
+    }
 }

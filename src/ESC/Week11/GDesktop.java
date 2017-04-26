@@ -3,13 +3,22 @@ package ESC.Week11;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class GDesktop {
     private final static int BOUND = 20;
     private final static int N_CONSUMERS = 4;
 
+    public static void main(String[] args) {
+        File[] roots = new File[1];
+        roots[0] = new File("src\\ESC\\Week11\\MeowTest");
+        startIndexing(roots);
+    }
+
     public static void startIndexing(File[] roots) {
+        Executor executor = Executors.newFixedThreadPool(BOUND + N_CONSUMERS);
         BlockingQueue<File> queue = new LinkedBlockingQueue<File>(BOUND);
         FileFilter filter = new FileFilter() {
             public boolean accept(File file) {
@@ -18,11 +27,13 @@ public class GDesktop {
         };
 
         for (File root : roots) {
-            (new FileCrawler(queue, filter, root)).start();
+            executor.execute(new FileCrawler(queue, filter, root));
+//            (new FileCrawler(queue, filter, root)).start();
         }
 
         for (int i = 0; i < N_CONSUMERS; i++) {
-            (new Indexer(queue)).start();
+            executor.execute(new Indexer(queue));
+//            (new Indexer(queue)).start();
         }
     }
 }
@@ -79,6 +90,6 @@ class Indexer extends Thread {
     }
 
     private void indexFile(File file) {
-        // TODO Auto-generated method stub
+        System.out.println("MEOW");
     }
 }
